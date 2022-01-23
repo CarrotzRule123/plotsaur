@@ -1,9 +1,9 @@
 Deno.dlopen("./target/debug/plotsaur.dll", {
-    ops_new_graph: {
+    ops_create_window: {
         parameters: [], 
         result: "u8"
     },
-    ops_event_callback: {
+    ops_run_return: {
         parameters: [], 
         result: "u8"
     }

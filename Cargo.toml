@@ -4,13 +4,11 @@ name = "plotsaur"
 publish = false
 version = "0.1.0"
 
-# [lib]
-# crate-type = ["cdylib"]
-[[bin]]
-name = "plotsaur"
+[lib]
+crate-type = ["cdylib"]
 
 [dependencies]
-plotters-iced = "0.1"
+plotters-iced = "0.1.4"
 iced_wgpu = "0.4.0"
 iced_winit = "0.3.0"
 plotters = "0.3"
