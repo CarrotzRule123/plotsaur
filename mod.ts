@@ -1,5 +1,1 @@
-self.addEventListener("unload", () => {
-    console.log('goodbye!');
- });
-
- self.close()
+export { PlotWindow } from "./lib/window.ts"

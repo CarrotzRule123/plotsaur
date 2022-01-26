@@ -8,8 +8,7 @@ version = "0.1.0"
 crate-type = ["cdylib"]
 
 [dependencies]
-plotters-iced = "0.1.4"
-iced_wgpu = "0.4.0"
-iced_winit = "0.3.0"
-plotters = "0.3"
-futures = "0.3.19"
+piston_window = "0.120.0"
+plotters = "^0.3.1"
+plotters-piston = {git = "https://github.com/plotters-rs/plotters-piston"}
+systemstat = "0.1.10"
