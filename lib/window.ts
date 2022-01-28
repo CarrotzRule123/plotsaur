@@ -1,18 +1,31 @@
 import { library } from "./bindings.ts"
+import { PlotChart } from "./plots/chart.ts";
+
+export type Plot = PlotChart
 
 export class PlotWindow {
-    private title: Uint8Array
+    private encoder: TextEncoder
+    public title: string
+    public height: number
+    public width: number
 
-    constructor(title: string) {
-        const encoder = new TextEncoder()
-        this.title = encoder.encode(title);
+    constructor(title: string, height: number, width: number) {
+        this.encoder = new TextEncoder()
+        this.title = title
+        this.height = height
+        this.width = width
     }
 
-    public addChart() {
+    public addPlot(plot: Plot) {
+        const json = plot.build()
+        const buffer = new Uint8Array(this.encoder.encode(json))
+        library.symbols.ops_build_plot(buffer, buffer.length)
     }
 
     public show() {
-        library.symbols.ops_create_window(this.title, this.title.length)
+        const { width, height } = this
+        const buffer = new Uint8Array(this.encoder.encode(this.title))
+        library.symbols.ops_create_window(buffer, buffer.length, width, height)
         while (true) {
             const control = library.symbols.ops_run_return()
             if (control == 1) {

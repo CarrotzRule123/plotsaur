@@ -1,5 +1,9 @@
 export const library = Deno.dlopen("./target/debug/plotsaur.dll", {
     ops_create_window: {
+        parameters: ["pointer", "usize", "f64", "f64"], 
+        result: "void"
+    },
+    ops_build_plot: {
         parameters: ["pointer", "usize"], 
         result: "void"
     },
