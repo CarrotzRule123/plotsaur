@@ -1,15 +1,36 @@
+import { Range, ShapeColor, TextStyle } from "../types.ts";
 import { createObject } from "../utils.ts";
 
-export class PlotChart {
-    public margin?: number
-    public caption?: {
+export interface PlotChart {
+    margin?: number
+    caption?: {
         caption: string,
-        style: {
-            family: string,
-            size: number
-        }
+        style: TextStyle
     }
+    xLabelAreaSize?: number,
+    yLabelAreaSize?: number,
+    cartesian2D: {
+        x_axis: Range,
+        y_axis: Range
+    },
+    mesh?: PlotChartMesh,
+    seriesLabel?: SeriesLabel
+}
 
+type PlotChartMesh = {
+    xLabels?: number,
+    yLabels?: number,
+    xDesc?: string,
+    yDesc?: string,
+    axisDescStyle?: TextStyle,
+}
+
+type SeriesLabel = {
+    backgroundStyle?: ShapeColor,
+    borderStyle?: ShapeColor,
+}
+
+export class PlotChart {
     constructor(options: Partial<PlotChart>) {
         Object.assign(this, options)
     }
@@ -17,9 +38,16 @@ export class PlotChart {
     public build() {
         const chart = []
         for (const key in this) {
-            if (this[key]) {
-                chart.push(createObject(key, this[key]))
+            let value: any = this[key]
+            if (key == "mesh" || key == "seriesLabel") {
+                value = []
+                for (const key2 in this[key]) {
+                    if (this[key][key2]) {
+                        value.push(createObject(key2, this[key][key2]))
+                    }
+                }
             }
+            if (this[key]) chart.push(createObject(key, value))
         }
         return JSON.stringify({ chart })
     }

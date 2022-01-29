@@ -1,7 +1,5 @@
 import { library } from "./bindings.ts"
-import { PlotChart } from "./plots/chart.ts";
-
-export type Plot = PlotChart
+import { Plot } from "./types.ts";
 
 export class PlotWindow {
     private encoder: TextEncoder

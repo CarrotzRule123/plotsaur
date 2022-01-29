@@ -13,7 +13,7 @@ pub enum PlotType {
 }
 
 #[derive(Deserialize, Clone)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub enum PlotOptions {
     Chart(Vec<ChartOptions>),
     None,
@@ -38,7 +38,27 @@ impl PlotType {
 }
 
 #[derive(Deserialize, Clone)]
-pub struct FontStyle {
+pub struct TextStyle {
     family: String,
     size: u32,
+}
+
+#[derive(Deserialize, Clone)]
+pub struct Point {
+    x: u32,
+    y: u32,
+}
+
+#[derive(Deserialize, Clone)]
+pub struct Range<T> {
+    start: T,
+    end: T,
+}
+
+#[derive(Deserialize, Clone)]
+pub struct ShapeColor {
+    r: u8,
+    g: u8,
+    b: u8,
+    a: f64,
 }
