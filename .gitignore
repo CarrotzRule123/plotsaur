@@ -1,3 +1,1 @@
 target/**/*
-
-!target/debug/plotsaur.dll
