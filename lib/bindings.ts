@@ -1,4 +1,13 @@
-export const library = Deno.dlopen("./target/debug/plotsaur.dll", {
+import { Plug } from "../deps.ts";
+
+const options: Plug.Options = {
+    name: "plotsaur",
+    urls: {
+        windows: "https://github.com/CarrotzRule123/plotsaur/blob/main/release/plotsaur.dll?raw=true"
+    }
+}
+
+export const library = await Plug.prepare(options, {
     ops_create_window: {
         parameters: ["pointer", "usize", "f64", "f64"], 
         result: "void"
