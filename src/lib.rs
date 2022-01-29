@@ -3,20 +3,21 @@
 mod plots;
 mod window;
 
+use plots::chart::SeriesOptions;
 use plots::{PlotOptions, PlotType};
 use window::PlotWindow;
 
 use std::cell::RefCell;
 
 pub struct Resources {
-    window: RefCell<Option<PlotWindow>>,
-    dispatch_buf: RefCell<Option<&'static [u8]>>
+    window: RefCell<PlotWindow>,
+    dispatch_buf: RefCell<Option<&'static [u8]>>,
 }
 
 impl Resources {
     pub fn new() -> Self {
         Self {
-            window: RefCell::new(Some(PlotWindow::new())),
+            window: RefCell::new(PlotWindow::new()),
             dispatch_buf: RefCell::new(None),
         }
     }
@@ -31,10 +32,8 @@ pub extern "C" fn ops_create_window(ptr: *const u8, len: usize, width: f64, heig
     let buf = unsafe { std::slice::from_raw_parts(ptr, len) };
     let title = std::str::from_utf8(&buf[0..len]).expect("Not a string");
     RESOURCES.with(|cell| {
-        if let Some(window) = cell.window.borrow_mut().as_mut() {
-            window.open(title.to_owned(), width, height);
-        };
-        // cell.dispatch_buf.replace(Some(buf));
+        let mut window = cell.window.borrow_mut();
+        window.open(title.to_owned(), width, height);
     });
 }
 
@@ -44,8 +43,21 @@ pub extern "C" fn ops_build_plot(ptr: *const u8, len: usize) {
     let json = std::str::from_utf8(&buf[0..len]).expect("Not a string");
     let options: PlotOptions = serde_json::from_str(json).unwrap();
     RESOURCES.with(|cell| {
-        if let Some(window) = cell.window.borrow_mut().as_mut() {
-            window.plot = PlotType::new(options);
+        let mut window = cell.window.borrow_mut();
+        window.plot = PlotType::new(options);
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn ops_write_data(ptr: *const u8, len: usize, data: *const f64, data_len: usize) {
+    let buf = unsafe { std::slice::from_raw_parts(ptr, len) };
+    let json = std::str::from_utf8(&buf[0..len]).expect("Not a string");
+    let options: SeriesOptions = serde_json::from_str(json).unwrap();
+    let data = unsafe { std::slice::from_raw_parts(data, data_len) };
+    RESOURCES.with(|cell| {
+        let mut window = cell.window.borrow_mut();
+        if let PlotType::Chart(chart) = &mut window.plot {
+            chart.plot(data, options);
         };
     })
 }
@@ -53,9 +65,7 @@ pub extern "C" fn ops_build_plot(ptr: *const u8, len: usize) {
 #[no_mangle]
 pub extern "C" fn ops_run_return() -> usize {
     RESOURCES.with(|cell| {
-        if let Some(window) = cell.window.borrow_mut().as_mut() {
-            return window.update();
-        }
-        0
+        let mut window = cell.window.borrow_mut();
+        window.update()
     })
 }

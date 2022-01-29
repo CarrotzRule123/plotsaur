@@ -1,9 +1,10 @@
-mod chart;
+pub mod chart;
 
 pub use chart::{ChartOptions, PlotChart};
 use plotters::coord::Shift;
 use plotters::prelude::*;
 use plotters_piston::PistonBackend;
+use plotters::style::RGBAColor;
 
 use serde::Deserialize;
 
@@ -61,4 +62,10 @@ pub struct ShapeColor {
     g: u8,
     b: u8,
     a: f64,
+}
+
+impl ShapeColor {
+    pub fn to_color(&self) -> RGBAColor {
+        RGBColor(self.r, self.g, self.b).mix(self.a)
+    }
 }

@@ -1,3 +1,4 @@
+import { library } from "../bindings.ts";
 import { Range, ShapeColor, TextStyle } from "../types.ts";
 import { createObject } from "../utils.ts";
 
@@ -50,5 +51,12 @@ export class PlotChart {
             if (this[key]) chart.push(createObject(key, value))
         }
         return JSON.stringify({ chart })
+    }
+
+    public plot(color: ShapeColor, label: string, values: number[]) {
+        const json = JSON.stringify({ color, label })
+        const buf = new TextEncoder().encode(json)
+        const data = new Float64Array(values)
+        library.symbols.ops_write_data(buf, buf.length, data, data.length)
     }
 }

@@ -4,6 +4,7 @@ use plotters::prelude::*;
 use plotters_piston::PistonBackend;
 
 use serde::Deserialize;
+use std::collections::vec_deque::VecDeque;
 
 use super::{Range, ShapeColor, TextStyle};
 
@@ -42,13 +43,42 @@ pub enum SeriesLabel {
     BorderStyle(ShapeColor),
 }
 
+pub struct Series {
+    pub color: ShapeColor,
+    pub label: String,
+    pub data: Vec<(f64, f64)>,
+}
+
+#[derive(Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct SeriesOptions {
+    pub color: ShapeColor,
+    pub label: String,
+}
+
 pub struct PlotChart {
     pub options: Vec<ChartOptions>,
+    pub data: Vec<Series>,
 }
 
 impl PlotChart {
     pub fn new(options: Vec<ChartOptions>) -> Self {
-        Self { options }
+        Self {
+            options,
+            data: Vec::new(),
+        }
+    }
+
+    pub fn plot(&mut self, buf: &[f64], options: SeriesOptions) {
+        let mut data = Vec::new();
+        for i in (0..buf.len()).step_by(2) {
+            data.push((buf[i], buf[i + 1]))
+        }
+        self.data.push(Series {
+            color: options.color,
+            label: options.label,
+            data
+        })
     }
 
     pub fn draw(&self, root: &DrawingArea<PistonBackend, Shift>) {
@@ -97,15 +127,22 @@ impl PlotChart {
             mesh.draw().expect("Error: Could not draw mesh!");
         };
 
+        for series in &self.data {
+            chart
+                .draw_series(LineSeries::new(series.data.clone(), series.color.to_color()))
+                .expect("Error: Could not draw series!")
+                .label(series.label.clone())
+                .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], series.color.to_color()));
+        }
+
         let mut series_label = chart.configure_series_labels();
         if let Some(options) = label_options {
             for option in options {
                 match option {
-                    SeriesLabel::BackgroundStyle(style) => series_label
-                        .background_style(RGBColor(style.r, style.g, style.b).mix(style.a)),
-                    SeriesLabel::BorderStyle(style) => {
-                        series_label.border_style(RGBColor(style.r, style.g, style.b).mix(style.a))
+                    SeriesLabel::BackgroundStyle(style) => {
+                        series_label.background_style(style.to_color())
                     }
+                    SeriesLabel::BorderStyle(style) => series_label.border_style(style.to_color()),
                 };
             }
             series_label.draw().expect("Error: Could not draw mesh!");
