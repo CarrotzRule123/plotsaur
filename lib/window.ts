@@ -1,5 +1,6 @@
 import { library } from "./bindings.ts"
-import { Plot } from "./types.ts";
+import { PlotChart } from "./chart.ts";
+import { SeriesOptions } from "./types.ts";
 
 export class PlotWindow {
     private encoder: TextEncoder
@@ -14,8 +15,8 @@ export class PlotWindow {
         this.width = width
     }
 
-    public addPlot(plot: Plot) {
-        const json = plot.build()
+    public addPlot(options: Partial<PlotChart>) {
+        const json = new PlotChart(options).build()
         const buffer = new Uint8Array(this.encoder.encode(json))
         library.symbols.ops_build_plot(buffer, buffer.length)
     }
@@ -31,4 +32,18 @@ export class PlotWindow {
             }
         }
     }
+
+    public plotSeries(options: SeriesOptions, values: number[]) {
+        const json = JSON.stringify({ series: { ...options } })
+        const buf = this.encoder.encode(json)
+        const data = new Float64Array(values)
+        library.symbols.ops_write_data(buf, buf.length, data, data.length)
+    }
+
+    // public plotHistogram(options: SeriesOptions, values: number[]) {
+    //     const json = JSON.stringify({ series: { ...options } })
+    //     const buf = this.encoder.encode(json)
+    //     const data = new Float64Array(values)
+    //     library.symbols.ops_write_data(buf, buf.length, data, data.length)
+    // }
 }

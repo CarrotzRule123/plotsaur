@@ -1,7 +1,7 @@
-import { COLOR, PlotChart, PlotWindow } from "../mod.ts";
+import { COLOR, PlotWindow } from "../mod.ts";
 
 const plot = new PlotWindow("Plotsaur Chart", 600, 600);
-const chart = new PlotChart({
+plot.addPlot({
     margin: 20,
     caption: {
         caption: "Plotsaur Chart",
@@ -31,11 +31,13 @@ const chart = new PlotChart({
         borderStyle: COLOR.BLACK
     }
 })
-plot.addPlot(chart)
 
 const data = []
 for (let i = -50; i < 50; i += 1) {
     data.push(i / 50, (i / 50) * (i / 50) * (i / 50))
 }
-chart.plot(COLOR.RED, "y = x ^ 3", data)
+plot.plotSeries({
+    color: COLOR.RED,
+    label: "y = x ^ 3"
+}, data)
 plot.show()

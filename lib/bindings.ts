@@ -2,9 +2,11 @@ import { Plug } from "../deps.ts";
 
 const options: Plug.Options = {
     name: "plotsaur",
-    urls: {
-        windows: "https://github.com/CarrotzRule123/plotsaur/blob/main/release/plotsaur.dll?raw=true"
-    }
+    // urls: {
+    //     windows: "https://github.com/CarrotzRule123/plotsaur/blob/main/release/plotsaur.dll?raw=true"
+    // }
+    policy: "NONE",
+    url: "./target/debug/",
 }
 
 export const library = await Plug.prepare(options, {

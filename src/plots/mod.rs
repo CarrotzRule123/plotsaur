@@ -1,71 +1,46 @@
-pub mod chart;
+mod series;
 
-pub use chart::{ChartOptions, PlotChart};
-use plotters::coord::Shift;
-use plotters::prelude::*;
+use plotters::chart::ChartContext;
+use plotters::coord::types::RangedCoordf64;
+use plotters::prelude::Cartesian2d;
 use plotters_piston::PistonBackend;
-use plotters::style::RGBAColor;
 
 use serde::Deserialize;
+pub use series::*;
 
-pub enum PlotType {
-    Chart(PlotChart),
-    None,
+pub struct Plots {
+    plots: Vec<PlotType>,
+}
+
+impl Plots {
+    pub fn new() -> Self {
+        Self { plots: Vec::new() }
+    }
+
+    pub fn build(&mut self, options: PlotOptions, data: &[f64]) {
+        self.plots.push(match options {
+            PlotOptions::Series(options) => Series::build(options, data),
+        })
+    }
+
+    pub fn draw(
+        &self,
+        chart: &mut ChartContext<PistonBackend, Cartesian2d<RangedCoordf64, RangedCoordf64>>,
+    ) {
+        for plot in &self.plots {
+            match plot {
+                PlotType::Series(plot) => plot.draw(chart),
+            }
+        }
+    }
 }
 
 #[derive(Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub enum PlotOptions {
-    Chart(Vec<ChartOptions>),
-    None,
+    Series(SeriesOptions),
 }
 
-impl PlotType {
-    pub fn new(options: PlotOptions) -> Self {
-        match options {
-            PlotOptions::Chart(options) => {
-                PlotType::Chart(PlotChart::new(options))
-            }
-            _ => PlotType::None,
-        }
-    }
-
-    pub fn draw(&self, root: &DrawingArea<PistonBackend, Shift>) {
-        match self {
-            PlotType::Chart(chart) => chart.draw(root),
-            _ => (),
-        }
-    }
-}
-
-#[derive(Deserialize, Clone)]
-pub struct TextStyle {
-    family: String,
-    size: u32,
-}
-
-#[derive(Deserialize, Clone)]
-pub struct Point {
-    x: u32,
-    y: u32,
-}
-
-#[derive(Deserialize, Clone)]
-pub struct Range<T> {
-    start: T,
-    end: T,
-}
-
-#[derive(Deserialize, Clone)]
-pub struct ShapeColor {
-    r: u8,
-    g: u8,
-    b: u8,
-    a: f64,
-}
-
-impl ShapeColor {
-    pub fn to_color(&self) -> RGBAColor {
-        RGBColor(self.r, self.g, self.b).mix(self.a)
-    }
+pub enum PlotType {
+    Series(Series),
 }

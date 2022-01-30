@@ -1,11 +1,14 @@
 #![allow(unused_variables, dead_code, unused_imports)]
 
+mod chart;
 mod plots;
 mod window;
+mod types;
 
-use plots::chart::SeriesOptions;
-use plots::{PlotOptions, PlotType};
-use window::PlotWindow;
+pub use types::*;
+pub use plots::*;
+pub use chart::*;
+pub use window::*;
 
 use std::cell::RefCell;
 
@@ -41,10 +44,10 @@ pub extern "C" fn ops_create_window(ptr: *const u8, len: usize, width: f64, heig
 pub extern "C" fn ops_build_plot(ptr: *const u8, len: usize) {
     let buf = unsafe { std::slice::from_raw_parts(ptr, len) };
     let json = std::str::from_utf8(&buf[0..len]).expect("Not a string");
-    let options: PlotOptions = serde_json::from_str(json).unwrap();
+    let options: ChartBuild = serde_json::from_str(json).unwrap();
     RESOURCES.with(|cell| {
         let mut window = cell.window.borrow_mut();
-        window.plot = PlotType::new(options);
+        window.plot.options = options.options;
     })
 }
 
@@ -52,13 +55,11 @@ pub extern "C" fn ops_build_plot(ptr: *const u8, len: usize) {
 pub extern "C" fn ops_write_data(ptr: *const u8, len: usize, data: *const f64, data_len: usize) {
     let buf = unsafe { std::slice::from_raw_parts(ptr, len) };
     let json = std::str::from_utf8(&buf[0..len]).expect("Not a string");
-    let options: SeriesOptions = serde_json::from_str(json).unwrap();
+    let options: PlotOptions = serde_json::from_str(json).unwrap();
     let data = unsafe { std::slice::from_raw_parts(data, data_len) };
     RESOURCES.with(|cell| {
         let mut window = cell.window.borrow_mut();
-        if let PlotType::Chart(chart) = &mut window.plot {
-            chart.plot(data, options);
-        };
+        window.plot.plots.build(options, data);
     })
 }
 

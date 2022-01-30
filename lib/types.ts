@@ -1,7 +1,3 @@
-import { PlotChart } from "./plots/chart.ts";
-
-export type Plot = PlotChart
-
 export type TextStyle = {
     family: Font,
     size: number
@@ -29,3 +25,8 @@ export const COLOR = Object.freeze({
 })
 
 export type Font = "serif" | "sans-serif" | "monospace"
+
+export type SeriesOptions = {
+    color: ShapeColor, 
+    label: string
+}

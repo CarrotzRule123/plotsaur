@@ -2,18 +2,18 @@ use piston_window::*;
 use plotters::prelude::*;
 use plotters_piston::draw_piston_window;
 
-use super::plots::PlotType;
+use super::chart::PlotChart;
 
 pub struct PlotWindow {
     pub window: Option<PistonWindow>,
-    pub plot: PlotType
+    pub plot: PlotChart
 }
 
 impl PlotWindow {
     pub fn new() -> Self {
         Self { 
             window: None,
-            plot: PlotType::None
+            plot: PlotChart::new()
         }
     }
 
@@ -28,9 +28,7 @@ impl PlotWindow {
         let mut control_flow = 0;
         if let Some(window) = &mut self.window {
             if let Some(events) = draw_piston_window(window, |b| {
-                let root = b.into_drawing_area();
-                root.fill(&WHITE)?;
-                self.plot.draw(&root);
+                self.plot.draw(b);
 
                 Ok(())
             }) {

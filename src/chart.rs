@@ -1,12 +1,17 @@
-use piston_window::*;
 use plotters::coord::Shift;
 use plotters::prelude::*;
 use plotters_piston::PistonBackend;
 
 use serde::Deserialize;
-use std::collections::vec_deque::VecDeque;
 
-use super::{Range, ShapeColor, TextStyle};
+use super::plots::Plots;
+use super::types::{Range, ShapeColor, TextStyle};
+
+#[derive(Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ChartBuild {
+    pub options: Vec<ChartOptions>
+}
 
 #[derive(Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -43,46 +48,23 @@ pub enum SeriesLabel {
     BorderStyle(ShapeColor),
 }
 
-pub struct Series {
-    pub color: ShapeColor,
-    pub label: String,
-    pub data: Vec<(f64, f64)>,
-}
-
-#[derive(Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct SeriesOptions {
-    pub color: ShapeColor,
-    pub label: String,
-}
-
 pub struct PlotChart {
     pub options: Vec<ChartOptions>,
-    pub data: Vec<Series>,
+    pub plots: Plots,
 }
 
 impl PlotChart {
-    pub fn new(options: Vec<ChartOptions>) -> Self {
+    pub fn new() -> Self {
         Self {
-            options,
-            data: Vec::new(),
+            options: Vec::new(),
+            plots: Plots::new(),
         }
     }
 
-    pub fn plot(&mut self, buf: &[f64], options: SeriesOptions) {
-        let mut data = Vec::new();
-        for i in (0..buf.len()).step_by(2) {
-            data.push((buf[i], buf[i + 1]))
-        }
-        self.data.push(Series {
-            color: options.color,
-            label: options.label,
-            data
-        })
-    }
-
-    pub fn draw(&self, root: &DrawingArea<PistonBackend, Shift>) {
-        let mut builder = &mut ChartBuilder::on(root);
+    pub fn draw(&self, backend: PistonBackend) {
+        let root = backend.into_drawing_area();
+        root.fill(&WHITE).expect("Error: Could not fill window");
+        let mut builder = &mut ChartBuilder::on(&root);
         let mut chart_builder = None;
         let mut mesh_options = None;
         let mut label_options = None;
@@ -127,13 +109,7 @@ impl PlotChart {
             mesh.draw().expect("Error: Could not draw mesh!");
         };
 
-        for series in &self.data {
-            chart
-                .draw_series(LineSeries::new(series.data.clone(), series.color.to_color()))
-                .expect("Error: Could not draw series!")
-                .label(series.label.clone())
-                .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], series.color.to_color()));
-        }
+        self.plots.draw(&mut chart);
 
         let mut series_label = chart.configure_series_labels();
         if let Some(options) = label_options {

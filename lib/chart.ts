@@ -1,6 +1,5 @@
-import { library } from "../bindings.ts";
-import { Range, ShapeColor, TextStyle } from "../types.ts";
-import { createObject } from "../utils.ts";
+import { Range, ShapeColor, TextStyle } from "./types.ts";
+import { createObject } from "./utils.ts";
 
 export interface PlotChart {
     margin?: number
@@ -37,7 +36,7 @@ export class PlotChart {
     }
 
     public build() {
-        const chart = []
+        const options = []
         for (const key in this) {
             let value: any = this[key]
             if (key == "mesh" || key == "seriesLabel") {
@@ -48,15 +47,8 @@ export class PlotChart {
                     }
                 }
             }
-            if (this[key]) chart.push(createObject(key, value))
+            if (this[key]) options.push(createObject(key, value))
         }
-        return JSON.stringify({ chart })
-    }
-
-    public plot(color: ShapeColor, label: string, values: number[]) {
-        const json = JSON.stringify({ color, label })
-        const buf = new TextEncoder().encode(json)
-        const data = new Float64Array(values)
-        library.symbols.ops_write_data(buf, buf.length, data, data.length)
+        return JSON.stringify({ options })
     }
 }
