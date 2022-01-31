@@ -5,10 +5,10 @@ use plotters_piston::PistonBackend;
 
 use serde::Deserialize;
 
-use super::PlotType;
+use super::SeriesType;
 use super::super::{PlotChart, ShapeColor};
 
-pub struct Series {
+pub struct Line {
     pub color: ShapeColor,
     pub label: String,
     pub data: Vec<(f64, f64)>,
@@ -16,18 +16,18 @@ pub struct Series {
 
 #[derive(Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct SeriesOptions {
+pub struct LineOptions {
     pub color: ShapeColor,
     pub label: String,
 }
 
-impl Series {
-    pub fn build(options: SeriesOptions, buf: &[f64]) -> PlotType {
+impl Line {
+    pub fn build(options: LineOptions, buf: &[f64]) -> SeriesType {
         let mut data = Vec::new();
         for i in (0..buf.len()).step_by(2) {
             data.push((buf[i], buf[i + 1]))
         }
-        PlotType::Series(Series {
+        SeriesType::Line(Line {
             color: options.color,
             label: options.label,
             data,
@@ -41,7 +41,7 @@ impl Series {
         let color = self.color.to_color();
         chart
             .draw_series(LineSeries::new(self.data.clone(), color.clone()))
-            .expect("Error: Could not draw series!")
+            .expect("Error: Could not draw line!")
             .label(self.label.clone())
             .legend(move |(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], color.clone()));
     }

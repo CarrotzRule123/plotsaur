@@ -18,7 +18,11 @@ export const library = await Plug.prepare(options, {
         parameters: ["pointer", "usize"], 
         result: "void"
     },
-    ops_write_data: {
+    ops_draw_element: {
+        parameters: ["pointer", "usize"], 
+        result: "void"
+    },
+    ops_draw_series: {
         parameters: ["pointer", "usize", "pointer", "usize"], 
         result: "void"
     },

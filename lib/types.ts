@@ -26,7 +26,18 @@ export const COLOR = Object.freeze({
 
 export type Font = "serif" | "sans-serif" | "monospace"
 
+export type Point = {
+    x: number,
+    y: number
+}
+
 export type SeriesOptions = {
     color: ShapeColor, 
     label: string
+}
+
+export type Rect = {
+    points: Point[],
+    style: ShapeColor,
+    filled: boolean
 }

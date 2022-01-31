@@ -6,14 +6,14 @@ use super::chart::PlotChart;
 
 pub struct PlotWindow {
     pub window: Option<PistonWindow>,
-    pub plot: PlotChart
+    pub chart: PlotChart
 }
 
 impl PlotWindow {
     pub fn new() -> Self {
         Self { 
             window: None,
-            plot: PlotChart::new()
+            chart: PlotChart::new()
         }
     }
 
@@ -28,7 +28,7 @@ impl PlotWindow {
         let mut control_flow = 0;
         if let Some(window) = &mut self.window {
             if let Some(events) = draw_piston_window(window, |b| {
-                self.plot.draw(b);
+                self.chart.draw(b);
 
                 Ok(())
             }) {

@@ -1,3 +1,4 @@
+import { COLOR } from "../mod.ts";
 import { Range, ShapeColor, TextStyle } from "./types.ts";
 import { createObject } from "./utils.ts";
 
@@ -9,7 +10,7 @@ export interface PlotChart {
     }
     xLabelAreaSize?: number,
     yLabelAreaSize?: number,
-    cartesian2D: {
+    cartesian2D?: {
         x_axis: Range,
         y_axis: Range
     },
@@ -31,6 +32,22 @@ type SeriesLabel = {
 }
 
 export class PlotChart {
+    margin?= 20;
+    xLabelAreaSize?= 40;
+    yLabelAreaSize?= 40;
+    mesh?: PlotChartMesh = {
+        xLabels: 10,
+        yLabels: 10,
+        axisDescStyle: {
+            family: "sans-serif",
+            size: 15
+        }
+    };
+    seriesLabel?: SeriesLabel = {
+        backgroundStyle: COLOR.WHITE,
+        borderStyle: COLOR.BLACK
+    }
+
     constructor(options: Partial<PlotChart>) {
         Object.assign(this, options)
     }
@@ -38,6 +55,7 @@ export class PlotChart {
     public build() {
         const options = []
         for (const key in this) {
+            // deno-lint-ignore no-explicit-any
             let value: any = this[key]
             if (key == "mesh" || key == "seriesLabel") {
                 value = []
