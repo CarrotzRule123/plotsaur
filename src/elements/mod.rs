@@ -11,12 +11,18 @@ pub use shapes::*;
 #[serde(rename_all = "camelCase")]
 pub enum ElementType {
     Rect(RectShape),
+    Circle(CircleShape),
+    Polygon(PolygonShape),
+    Text(TextShape),
 }
 
 impl ElementType {
     pub fn draw(&self, root: &mut DrawingArea<PistonBackend, Shift>) {
         match self {
             ElementType::Rect(rect) => rect.draw(root),
+            ElementType::Circle(circle) => circle.draw(root),
+            ElementType::Polygon(polygon) => polygon.draw(root),
+            ElementType::Text(text) => text.draw(root),
         }
     }
 }

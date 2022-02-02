@@ -41,3 +41,42 @@ export type Rect = {
     style: ShapeColor,
     filled: boolean
 }
+
+export type Circle = {
+    points: Point,
+    size: number,
+    style: ShapeColor,
+    filled: boolean
+}
+
+export type Polygon = {
+    points: Point[],
+    style: ShapeColor,
+    filled: boolean
+}
+
+export type Text = {
+    points: Point,
+    style: TextStyle,
+    color: ShapeColor,
+    text: string
+}
+
+export type Cartesian2D = {
+    type: ChartType,
+    x_axis: Range | string[],
+    y_axis: Range | string[]
+}
+
+export type Histogram = {
+    color: ShapeColor, 
+    filled: boolean
+}
+
+export type HistogramOptions = {
+    color: ShapeColor, 
+    filled: boolean
+}
+
+
+export type ChartType = "ranged" | "segmentedX" | "segmentedY" | "valuesX" | "valuesY"

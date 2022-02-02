@@ -1,14 +1,15 @@
 use plotters::chart::ChartContext;
-use plotters::coord::types::RangedCoordf64;
+use plotters::coord::ranged1d::SegmentedCoord;
 use plotters::prelude::*;
 use plotters_piston::PistonBackend;
 
 use serde::Deserialize;
 
+use super::super::{ChartType, PlotChart, ShapeColor};
 use super::SeriesType;
-use super::super::{PlotChart, ShapeColor};
 
-pub struct Line {
+#[derive(Clone)]
+pub struct LinePlot {
     pub color: ShapeColor,
     pub label: String,
     pub data: Vec<(f64, f64)>,
@@ -21,28 +22,27 @@ pub struct LineOptions {
     pub label: String,
 }
 
-impl Line {
+impl LinePlot {
     pub fn build(options: LineOptions, buf: &[f64]) -> SeriesType {
         let mut data = Vec::new();
         for i in (0..buf.len()).step_by(2) {
             data.push((buf[i], buf[i + 1]))
         }
-        SeriesType::Line(Line {
+        SeriesType::Line(LinePlot {
             color: options.color,
             label: options.label,
             data,
         })
     }
 
-    pub fn draw(
-        &self,
-        chart: &mut ChartContext<PistonBackend, Cartesian2d<RangedCoordf64, RangedCoordf64>>,
-    ) {
-        let color = self.color.to_color();
-        chart
-            .draw_series(LineSeries::new(self.data.clone(), color.clone()))
-            .expect("Error: Could not draw line!")
-            .label(self.label.clone())
-            .legend(move |(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], color.clone()));
+    pub fn draw(&self, chart: &mut ChartType) {
+        if let ChartType::Ranged(chart) = chart {
+            let color = self.color.to_color();
+            chart
+                .draw_series(LineSeries::new(self.data.clone(), color.clone()))
+                .expect("Error: Could not draw line!")
+                .label(self.label.clone())
+                .legend(move |(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], color.clone()));
+        }
     }
 }

@@ -1,5 +1,5 @@
 import { COLOR } from "../mod.ts";
-import { Range, ShapeColor, TextStyle } from "./types.ts";
+import { Cartesian2D, ShapeColor, TextStyle } from "./types.ts";
 import { createObject } from "./utils.ts";
 
 export interface PlotChart {
@@ -10,10 +10,7 @@ export interface PlotChart {
     }
     xLabelAreaSize?: number,
     yLabelAreaSize?: number,
-    cartesian2D?: {
-        x_axis: Range,
-        y_axis: Range
-    },
+    cartesian2D?: Cartesian2D,
     mesh?: PlotChartMesh,
     seriesLabel?: SeriesLabel
 }

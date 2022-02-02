@@ -4,10 +4,7 @@ const plot = new PlotWindow("Plotsaur Chart", 600, 600);
 plot.addPlot({
     caption: {
         caption: "Plotsaur Chart",
-        style: {
-            family: "sans-serif",
-            size: 30
-        }
+        style: { family: "sans-serif", size: 30 }
     },
     mesh: {
         xDesc: "X Axis",
@@ -15,6 +12,7 @@ plot.addPlot({
     },
 })
 plot.cartesian2D({
+    type: "ranged",
     x_axis: { start: -1, end: 1 },
     y_axis: { start: -1, end: 1 },
 })

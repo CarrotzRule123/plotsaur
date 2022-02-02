@@ -5,7 +5,7 @@ use plotters_piston::PistonBackend;
 
 use serde::Deserialize;
 
-use super::super::{PlotChart, Point, ShapeColor};
+use super::super::{PlotChart, Point, ShapeColor, TextStyles};
 use super::ElementType;
 
 #[derive(Deserialize, Clone)]
@@ -18,7 +18,6 @@ pub struct RectShape {
 
 impl RectShape {
     pub fn draw(&self, root: &mut DrawingArea<PistonBackend, Shift>) {
-        let color = self.style.to_color();
         let coords = self.points.clone().map(|point| (point.x, point.y));
         let mut style: ShapeStyle = self.style.to_color().into();
         if self.filled {
@@ -26,5 +25,72 @@ impl RectShape {
         };
         root.draw(&Rectangle::new(coords, style))
             .expect("Error: Could not draw rectangle!")
+    }
+}
+
+#[derive(Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct CircleShape {
+    points: Point<i32>,
+    style: ShapeColor,
+    size: f64,
+    filled: bool,
+}
+
+impl CircleShape {
+    pub fn draw(&self, root: &mut DrawingArea<PistonBackend, Shift>) {
+        let mut style: ShapeStyle = self.style.to_color().into();
+        if self.filled {
+            style = style.filled();
+        };
+        root.draw(&Circle::new(
+            (self.points.x, self.points.y),
+            self.size,
+            style,
+        ))
+        .expect("Error: Could not draw rectangle!")
+    }
+}
+
+#[derive(Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct PolygonShape {
+    points: Vec<Point<i32>>,
+    style: ShapeColor,
+    filled: bool,
+}
+
+impl PolygonShape {
+    pub fn draw(&self, root: &mut DrawingArea<PistonBackend, Shift>) {
+        let coords: Vec<(i32, i32)> = self.points.iter().map(|point| (point.x, point.y)).collect();
+        let mut style: ShapeStyle = self.style.to_color().into();
+        if self.filled {
+            style = style.filled();
+        };
+        root.draw(&Polygon::new(coords, style))
+            .expect("Error: Could not draw rectangle!")
+    }
+}
+
+#[derive(Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct TextShape {
+    points: Point<i32>,
+    style: TextStyles,
+    text: String,
+    color: ShapeColor,
+}
+
+impl TextShape {
+    pub fn draw(&self, root: &mut DrawingArea<PistonBackend, Shift>) {
+        let color = self.color.to_color();
+        let style = TextStyle::from((self.style.family.as_str(), self.style.size).into_font())
+            .color(&color);
+        root.draw(&Text::new(
+            self.text.clone(),
+            (self.points.x, self.points.y),
+            style,
+        ))
+        .expect("Error: Could not draw rectangle!")
     }
 }

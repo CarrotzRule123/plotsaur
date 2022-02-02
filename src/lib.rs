@@ -1,15 +1,17 @@
 #![allow(unused_variables, dead_code, unused_imports)]
 
 mod chart;
+mod chart_type;
 mod elements;
 mod series;
-mod window;
 mod types;
+mod window;
 
-pub use types::*;
-pub use series::*;
-pub use elements::*;
 pub use chart::*;
+pub use chart_type::*;
+pub use elements::*;
+pub use series::*;
+pub use types::*;
 pub use window::*;
 
 use std::cell::RefCell;
@@ -49,7 +51,12 @@ pub extern "C" fn ops_build_plot(ptr: *const u8, len: usize) {
     let options: ChartBuild = serde_json::from_str(json).unwrap();
     RESOURCES.with(|cell| {
         let mut window = cell.window.borrow_mut();
-        window.chart.options = options.options;
+        window.chart.options = options.options.clone();
+        for option in options.options {
+            if let ChartOptions::Cartesian2D(options) = option {
+                window.chart.chart_type = options.clone();
+            }
+        }
     })
 }
 
@@ -59,9 +66,10 @@ pub extern "C" fn ops_draw_series(ptr: *const u8, len: usize, data: *const f64, 
     let json = std::str::from_utf8(&buf[0..len]).expect("Not a string");
     let options: SeriesOptions = serde_json::from_str(json).unwrap();
     let data = unsafe { std::slice::from_raw_parts(data, data_len) };
+    // println!("{:?}", json);
     RESOURCES.with(|cell| {
         let mut window = cell.window.borrow_mut();
-        let series = SeriesType::build(options, data);
+        let series = SeriesType::build(options, data, window.chart.chart_type.clone());
         window.chart.series.push(series);
     })
 }

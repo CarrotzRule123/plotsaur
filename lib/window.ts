@@ -1,6 +1,7 @@
 import { library } from "./bindings.ts"
 import { PlotChart } from "./chart.ts";
-import { Range, Rect, SeriesOptions } from "./types.ts";
+import { Cartesian2D, Circle, HistogramOptions, Polygon, Rect, SeriesOptions, Text } from "./types.ts";
+import { scalePoint, scaleShapes } from "./utils.ts";
 
 export class PlotWindow {
     private encoder: TextEncoder
@@ -32,10 +33,7 @@ export class PlotWindow {
         }
     }
 
-    public cartesian2D(range: {
-        x_axis: Range,
-        y_axis: Range
-    }) {
+    public cartesian2D(range: Cartesian2D) {
         if (this.chart) {
             this.chart.cartesian2D = range
             const json = this.chart.build()
@@ -44,23 +42,44 @@ export class PlotWindow {
         }
     }
 
-    public plotLineSeries(options: SeriesOptions, values: number[]) {
+    public plotLineSeries(options: SeriesOptions, data: number[]) {
         const json = JSON.stringify({ line: { ...options } })
         const buf = this.encoder.encode(json)
-        const data = new Float64Array(values)
-        library.symbols.ops_draw_series(buf, buf.length, data, data.length)
+        const vec = new Float64Array(data)
+        library.symbols.ops_draw_series(buf, buf.length, vec, vec.length)
     }
 
     public drawRect(options: Rect) {
+        scaleShapes(options.points)
         const json = JSON.stringify({ rect: { ...options } })
         const buf = this.encoder.encode(json)
         library.symbols.ops_draw_element(buf, buf.length)
     }
 
-    // public plotHistogram(options: SeriesOptions, values: number[]) {
-    //     const json = JSON.stringify({ series: { ...options } })
-    //     const buf = this.encoder.encode(json)
-    //     const data = new Float64Array(values)
-    //     library.symbols.ops_write_data(buf, buf.length, data, data.length)
-    // }
+    public drawCircle(options: Circle) {
+        const json = JSON.stringify({ circle: { ...options } })
+        const buf = this.encoder.encode(json)
+        library.symbols.ops_draw_element(buf, buf.length)
+    }
+
+    public drawPolygon(options: Polygon) {
+        scaleShapes(options.points)
+        const json = JSON.stringify({ polygon: { ...options } })
+        const buf = this.encoder.encode(json)
+        library.symbols.ops_draw_element(buf, buf.length)
+    }
+
+    public drawText(options: Text) {
+        scalePoint(options.points)
+        const json = JSON.stringify({ text: { ...options } })
+        const buf = this.encoder.encode(json)
+        library.symbols.ops_draw_element(buf, buf.length)
+    }
+
+    public plotHistogram(options: HistogramOptions, data: number[]) {
+        const json = JSON.stringify({ histogram: { ...options } })
+        const buf = this.encoder.encode(json)
+        const vec = new Float64Array(data)
+        library.symbols.ops_draw_series(buf, buf.length, vec, vec.length)
+    }
 }

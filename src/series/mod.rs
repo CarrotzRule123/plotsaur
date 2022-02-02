@@ -1,3 +1,4 @@
+mod histogram;
 mod line;
 
 use plotters::chart::ChartContext;
@@ -5,32 +6,36 @@ use plotters::coord::types::RangedCoordf64;
 use plotters::prelude::Cartesian2d;
 use plotters_piston::PistonBackend;
 
+pub use histogram::*;
 pub use line::*;
 use serde::Deserialize;
+
+use super::{ChartType, ChartTypeOptions};
 
 #[derive(Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub enum SeriesOptions {
     Line(LineOptions),
+    Histogram(HistogramOptions),
 }
 
 pub enum SeriesType {
-    Line(Line),
+    Line(LinePlot),
+    Histogram(HistogramPlot),
 }
 
 impl SeriesType {
-    pub fn build(options: SeriesOptions, buf: &[f64]) -> SeriesType {
+    pub fn build(options: SeriesOptions, buf: &[f64], chart_type: ChartTypeOptions) -> SeriesType {
         match options {
-            SeriesOptions::Line(options) => Line::build(options, buf),
+            SeriesOptions::Line(options) => LinePlot::build(options, buf),
+            SeriesOptions::Histogram(options) => HistogramPlot::build(options, buf, chart_type),
         }
     }
 
-    pub fn draw(
-        &self,
-        chart: &mut ChartContext<PistonBackend, Cartesian2d<RangedCoordf64, RangedCoordf64>>,
-    ) {
-        match self {
+    pub fn draw<'a>(&'a self, chart: &mut ChartType<'_, '_, 'a>) {
+        match &self {
             SeriesType::Line(line) => line.draw(chart),
+            SeriesType::Histogram(histogram) => histogram.draw(chart),
         }
     }
 }
