@@ -78,5 +78,9 @@ export type HistogramOptions = {
     filled: boolean
 }
 
+export type Path = {
+    points: Point[],
+    style: ShapeColor
+}
 
 export type ChartType = "ranged" | "segmentedX" | "segmentedY" | "valuesX" | "valuesY"

@@ -48,7 +48,7 @@ impl CircleShape {
             self.size,
             style,
         ))
-        .expect("Error: Could not draw rectangle!")
+        .expect("Error: Could not draw circle!")
     }
 }
 
@@ -68,7 +68,7 @@ impl PolygonShape {
             style = style.filled();
         };
         root.draw(&Polygon::new(coords, style))
-            .expect("Error: Could not draw rectangle!")
+            .expect("Error: Could not draw polygon!")
     }
 }
 
@@ -91,6 +91,22 @@ impl TextShape {
             (self.points.x, self.points.y),
             style,
         ))
-        .expect("Error: Could not draw rectangle!")
+        .expect("Error: Could not draw text!")
+    }
+}
+
+#[derive(Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct PathShape {
+    points: Vec<Point<i32>>,
+    style: ShapeColor,
+}
+
+impl PathShape {
+    pub fn draw(&self, root: &mut DrawingArea<PistonBackend, Shift>) {
+        let coords: Vec<(i32, i32)> = self.points.iter().map(|point| (point.x, point.y)).collect();
+        let style: ShapeStyle = self.style.to_color().into();
+        root.draw(&PathElement::new(coords, style))
+            .expect("Error: Could not draw path!")
     }
 }

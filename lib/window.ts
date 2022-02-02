@@ -1,6 +1,6 @@
 import { library } from "./bindings.ts"
 import { PlotChart } from "./chart.ts";
-import { Cartesian2D, Circle, HistogramOptions, Polygon, Rect, SeriesOptions, Text } from "./types.ts";
+import { Cartesian2D, Circle, HistogramOptions, Path, Polygon, Rect, SeriesOptions, Text } from "./types.ts";
 import { scalePoint, scaleShapes } from "./utils.ts";
 
 export class PlotWindow {
@@ -72,6 +72,13 @@ export class PlotWindow {
     public drawText(options: Text) {
         scalePoint(options.points)
         const json = JSON.stringify({ text: { ...options } })
+        const buf = this.encoder.encode(json)
+        library.symbols.ops_draw_element(buf, buf.length)
+    }
+
+    public drawPath(options: Path) {
+        scaleShapes(options.points)
+        const json = JSON.stringify({ path: { ...options } })
         const buf = this.encoder.encode(json)
         library.symbols.ops_draw_element(buf, buf.length)
     }

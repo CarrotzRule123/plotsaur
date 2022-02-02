@@ -39,4 +39,8 @@ plot.drawText({
     text: "Some text here",
     style: { family: "sans-serif", size: 30 }
 })
+plot.drawPath({
+    style: COLOR.BLACK,
+    points: [{ x: 100, y: 300 }, { x: 500, y: 300 }],
+})
 plot.show()

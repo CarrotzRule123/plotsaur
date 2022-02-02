@@ -14,6 +14,7 @@ pub enum ElementType {
     Circle(CircleShape),
     Polygon(PolygonShape),
     Text(TextShape),
+    Path(PathShape),
 }
 
 impl ElementType {
@@ -23,6 +24,7 @@ impl ElementType {
             ElementType::Circle(circle) => circle.draw(root),
             ElementType::Polygon(polygon) => polygon.draw(root),
             ElementType::Text(text) => text.draw(root),
+            ElementType::Path(path) => path.draw(root),
         }
     }
 }
