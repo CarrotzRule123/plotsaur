@@ -1,5 +1,4 @@
 use piston_window::*;
-use plotters::prelude::*;
 use plotters_piston::draw_piston_window;
 
 use super::chart::PlotChart;
@@ -32,7 +31,7 @@ impl PlotWindow {
 
                 Ok(())
             }) {
-                if let Some(close_event) = events.close_args() {
+                if let Some(_) = events.close_args() {
                     control_flow = 1;
                     self.window = None;
                 };

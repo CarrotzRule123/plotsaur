@@ -1,7 +1,6 @@
 use plotters::coord::ranged1d::SegmentedCoord;
 use plotters::coord::types::{RangedCoordf64, RangedCoordi32, RangedSlice};
 use plotters::prelude::*;
-use plotters::chart::MeshStyle;
 use plotters_piston::PistonBackend;
 
 use serde::Deserialize;

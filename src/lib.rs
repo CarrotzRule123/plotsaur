@@ -1,5 +1,3 @@
-#![allow(unused_variables, dead_code, unused_imports)]
-
 mod chart;
 mod chart_type;
 mod elements;
@@ -18,14 +16,14 @@ use std::cell::RefCell;
 
 pub struct Resources {
     window: RefCell<PlotWindow>,
-    dispatch_buf: RefCell<Option<&'static [u8]>>,
+    // dispatch_buf: RefCell<Option<&'static [u8]>>,
 }
 
 impl Resources {
     pub fn new() -> Self {
         Self {
             window: RefCell::new(PlotWindow::new()),
-            dispatch_buf: RefCell::new(None),
+            // dispatch_buf: RefCell::new(None),
         }
     }
 }

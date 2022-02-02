@@ -1,11 +1,8 @@
-use plotters::chart::ChartContext;
-use plotters::coord::ranged1d::SegmentedCoord;
 use plotters::prelude::*;
-use plotters_piston::PistonBackend;
 
 use serde::Deserialize;
 
-use super::super::{ChartType, PlotChart, ShapeColor};
+use super::super::{ChartType, ShapeColor};
 use super::SeriesType;
 
 #[derive(Clone)]

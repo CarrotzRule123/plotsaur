@@ -1,8 +1,5 @@
-use plotters::coord::ranged1d::SegmentedCoord;
-use plotters::coord::Shift;
 use plotters::prelude::*;
 use plotters::style::RGBAColor;
-use plotters_piston::PistonBackend;
 
 use serde::Deserialize;
 

@@ -1,11 +1,6 @@
 mod histogram;
 mod line;
 
-use plotters::chart::ChartContext;
-use plotters::coord::types::RangedCoordf64;
-use plotters::prelude::Cartesian2d;
-use plotters_piston::PistonBackend;
-
 pub use histogram::*;
 pub use line::*;
 use serde::Deserialize;

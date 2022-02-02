@@ -1,10 +1,9 @@
-use plotters::coord::Shift;
 use plotters::prelude::*;
 use plotters_piston::PistonBackend;
 
 use serde::Deserialize;
 
-use super::{ChartType, ChartTypeOptions, ElementType, Range, SeriesType, ShapeColor, TextStyles};
+use super::{ChartType, ChartTypeOptions, ElementType, SeriesType, ShapeColor, TextStyles};
 
 #[derive(Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
