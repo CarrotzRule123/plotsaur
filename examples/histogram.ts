@@ -1,9 +1,9 @@
 import { COLOR, PlotWindow } from "../mod.ts";
 
-const plot = new PlotWindow("Plotsaur Bar Chart", 600, 600);
+const plot = new PlotWindow("Plotsaur Histogram", 600, 600);
 plot.addPlot({
     caption: {
-        caption: "Plotsaur Bar Chart",
+        caption: "Plotsaur Histogram",
         style: { family: "sans-serif", size: 30 }
     },
     mesh: {
