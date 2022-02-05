@@ -2,7 +2,7 @@ import { Plug } from "../deps.ts";
 
 const options: Plug.Options = {
     name: "plotsaur",
-    url: "./release/",
+    url: `${import.meta.url}/../../release/`,
     policy: "NONE",
     // url: "./target/release/",
 }
